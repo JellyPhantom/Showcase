@@ -59,6 +59,19 @@ for col in cols:
     df[col] = df[col].astype('Int16')
     df[col] = df[col].fillna(0)
 
+# Restructuring df before output
+df = df[['Latitude',
+         'Longitude',
+         'EventType',
+         'EventDateTimeUTC',
+         'OnboardNone',
+         'OnboardMinor',
+         'OnboardSerious',
+         'OnboardFatal',
+         'OngroundMinor',
+         'OngroundSerious',
+         'OngroundFatal']]
+
 # Printout of data
 print(df.info())
 print(df.head(20))
