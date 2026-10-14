@@ -5,9 +5,14 @@ import pandas as pd
 filename = 'carol_aviation_investigations_data.json'
 df: pd.DataFrame = pd.read_json(filename)
 
+
+# Restricting to USA crashes
+df = df[df['Country'] == 'USA']
+
 # Dropping unnecessary columns
 df = df.drop(['MKey',
               'NTSBNumber',
+              'HighestInjuryLevel',
               'CompletionStatus',
               'hasSafetyRecommendation',
               'IsStudy',
@@ -32,25 +37,29 @@ df = df.drop(['MKey',
               'BoardMeetingDate',
               'ReportNumber',
               'DocketOpenDate',
-              'ReportDate'], axis=1)
+              'ReportDate',
+              'InjuryOnboardCount',
+              'FatalInjuryCount',
+              'SeriousInjuryCount',
+              'MinorInjuryCount',
+              'InjuryOngroundCount'], axis=1)
 
 # Converting datatypes
-df = df.astype({
-              'HighestInjuryLevel': 'category',
-              'EventType': 'category',
-              'InjuryOnboardCount': 'Int16',
-              'FatalInjuryCount': 'Int16',
-              'OnboardFatal': 'Int16',
-              'SeriousInjuryCount': 'Int16',
-              'MinorInjuryCount': 'Int16',
-              'OnboardSerious': 'Int16',
-              'OnboardMinor': 'Int16',
-              'InjuryOngroundCount': 'Int16',
-              'OnboardNone': 'Int16',
-              'OngroundFatal': 'Int16',
-              'OngroundSerious': 'Int16',
-              'OngroundMinor': 'Int16'
-               })
+df['EventType'] = df['EventType'].astype('category')
+df['EventDateTimeUTC'] = pd.to_datetime(df['EventDateTimeUTC'])
+
+cols = ['OnboardFatal',
+        'OnboardSerious',
+        'OnboardMinor',
+        'OnboardNone',
+        'OngroundFatal',
+        'OngroundSerious',
+        'OngroundMinor']
+for col in cols:
+    df[col] = df[col].astype('Int16')
+    df[col] = df[col].fillna(0)
 
 # Printout of data
 print(df.info())
+print(df.head(20))
+df.to_csv('output.csv')
